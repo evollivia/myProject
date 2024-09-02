@@ -1,0 +1,64 @@
+{% extends 'include/base.html' %}
+
+{% block title %}
+프로젝트 게시판 글수정 페이지
+{% endblock %}
+
+{% block main %}
+<main>
+<div id="wrap" class="container mt-5">
+    <main>
+        <h2 class="text-center mb-4">글수정</h2>
+        <div class="card">
+            <div class="card-body">
+                <form action="/board/update" method="post">
+                    <!-- Hidden Post ID (for identifying the post to update) -->
+                    <input type="hidden" name="post_id" value="게시물 아이디">
+
+                    <!-- Post Title -->
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-2 col-form-label">제 목</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="title" name="title" value="게시물 제목">
+                        </div>
+                    </div>
+
+                    <!-- Post Author (Read-Only) -->
+                    <div class="mb-3 row">
+                        <label for="userid" class="col-sm-2 col-form-label">작성자</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="userid" value="작성자 아이디" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Post Content -->
+                    <div class="mb-3 row">
+                        <label for="contents" class="col-sm-2 col-form-label">본 문</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" id="contents" name="contents" rows="10">게시물 본문 내용이 여기에 표시됩니다.</textarea>
+                        </div>
+                    </div>
+
+                    <!-- File Upload (if any) -->
+                    <div class="mb-3 row">
+                        <label for="uploadedFile" class="col-sm-2 col-form-label">첨부 파일</label>
+                        <div class="col-sm-10">
+                            <input type="file" class="form-control" id="uploadedFile" name="uploadedFile">
+                            <small class="text-muted">기존 파일: <a href="/path/to/uploaded/file">uploaded_file_name.ext</a></small>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center">
+                        <button type="button" class="btn btn-secondary me-2" onclick="location.href='/board/list'">취소</button>
+                        <button type="submit" class="btn btn-primary">저장하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</main>
+{% endblock %}
+
+<script src="/static/js/bs5/bootstrap.bundle.min.js"></script>

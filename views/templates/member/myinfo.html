@@ -1,0 +1,98 @@
+{% extends 'include/base.html' %}
+
+{% block title %}
+세미 프로젝트 - 회원정보
+{% endblock %}
+
+{% block style %}
+<style>
+    body {
+        background-color: darkgray;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .navbar {
+        background-color: #343a40;
+    }
+
+    .navbar-brand {
+        color: white;
+        font-weight: bold;
+    }
+
+    .table-container {
+        margin-top: 50px;
+    }
+
+    .custom-table {
+        background-color: lightslategray; /* 테이블 배경색 */
+        border-color: black; /* 테두리 색상 */
+    }
+
+    .custom-table th {
+        background-color: gray; /* 헤더 배경색 */
+        color: white; /* 헤더 텍스트 색상 */
+    }
+
+    .custom-table td {
+        color: #333; /* 셀 텍스트 색상 */
+    }
+
+    .btn-back {
+        margin-top: 20px;
+    }
+
+    .card {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+    <main>
+        <div class="container table-container">
+            <h2 class="text-center mb-4">사용자 정보</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {% for m in myinfo %}
+                            <table class="table table-bordered table-striped custom-table">
+                                <tbody>
+                                <tr>
+                                    <th scope="row">아이디</th>
+                                    <td id="userid">{{ m.userid }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">이름</th>
+                                    <td id="name">{{ m.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">이메일</th>
+                                    <td id="email">{{ m.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">가입일</th>
+                                    <td id="rdate">{{ m.regdate.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            {% endfor %}
+                            <div class="text-center">
+                                <a href="/member/mainpage" class="btn btn-outline-success btn-back">메인 페이지</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

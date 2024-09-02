@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - MusicStream</title>
+    <link href="/static/css/bs5/bootstrap.min.css" rel="stylesheet">
+</head>
+
+{% block style %}
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+        async defer></script>
+<script type="text/javascript">
+  var onloadCallback = () => {
+    grecaptcha.render('captcha', { 'sitekey' : '6LeMoCsqAAAAABZV_wacgd68VMZQnm17fubv6QHh' });
+  };
+</script>
+{% include 'include/style.html' %}
+{% endblock %}
+
+{% block main %}
+<main class="background">
+    <div class="welcome-message">
+        <p>GitMusic에 오신것을 환영합니다</p>
+    </div>
+    <div class="signup-container">
+        <div class="text-center mb-4">
+            <img src="/static/img/logo.png" alt="로고" class="logo">
+        </div>
+            <form name="joinfrm" id="joinfrm">
+                <div class="mb-2">
+                    <label for="userid" class="form-label">아이디</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="userid" id="userid" required>
+                        <button type="button" id="checkUserIdBtn" class="btn btn-secondary">중복 체크</button>
+                    </div>
+                    <div id="userid-feedback" class="invalid-feedback"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="passwd" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" name="passwd" id="passwd" required>
+                </div>
+                <div class="mb-3">
+                    <label for="repasswd" class="form-label">비밀번호 확인</label>
+                    <input type="password" class="form-control" name="repasswd" id="repasswd" required>
+                </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">이름</label>
+                    <input type="text" class="form-control" name="name" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">이메일</label>
+
+                    <input type="email" class="form-control" name="email" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="captcha" class="form-label">자동가입방지</label>
+                    <div id="captcha"></div>
+                </div>
+
+                <button type="button" id="joinbtn" class="btn btn-primary w-100">회원가입</button>
+                <div class="text-center mt-3">
+                    <p>계정이 이미 있으신가요? <a href="/">Login</a></p>
+                </div>
+            </form>
+        </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block script %}
+<script>
+    // 회원정보를 입력받아 폼 유효성 검사 수행 후
+    // 입력한 정보를 json 형식으로 생성한 후 서버로 전송
+    let joinbtn = document.querySelector('#joinbtn');
+    let joinfrm = document.querySelector('#joinfrm');
+    let checkUserIdBtn = document.querySelector('#checkUserIdBtn');
+    let useridInput = document.querySelector('#userid');
+    let useridFeedback = document.querySelector('#userid-feedback');
+    let isChecked = false;
+
+    let checkUserId = async (userid) => {
+        try {
+            let response = await fetch(`/member/check_userid?userid=${userid}`);
+            let data = await response.json();
+            return data.exists;
+        } catch (error) {
+            console.error('Error checking userid:', error);
+            return true; // 오류 발생 시 중복으로 간주
+        }
+    };
+
+    checkUserIdBtn.addEventListener('click', async () => {
+        if (useridInput.value === '') {
+            alert('아이디를 입력하세요.');
+            return;
+        }
+
+        let isDuplicate = await checkUserId(useridInput.value);
+        if (isDuplicate) {
+            useridInput.classList.add('is-invalid');
+            useridFeedback.textContent = alert('이미 사용 중인 아이디입니다.');
+            isChecked = false; // 중복된 경우 회원가입을 막음
+        } else {
+            useridInput.classList.remove('is-invalid');
+            useridFeedback.textContent = alert('사용 가능한 아이디입니다.');
+            useridInput.classList.add('is-valid');
+            isChecked = true;
+        }
+    });
+
+    // 회원 가입 폼 체크 함수
+    let checkjoinfrm = (frm) => {
+        if(frm.userid.value === ''){
+            alert('아이디를 입력하세요');
+            frm.userid.focus()
+            return false;
+        } else if (frm.passwd.value.length < 6) {
+            alert('비밀번호는 6자리 이상이어야 합니다');
+            frm.passwd.focus();
+            return false;
+        } else if(frm.passwd.value === ''){
+            alert('비밀번호를 입력하세요');
+            frm.passwd.focus()
+            return false;
+        } else if(frm.repasswd.value === ''){
+            alert('비밀번호를 다시 입력하세요');
+            frm.repasswd.focus()
+            return false;
+        } else if(frm.repasswd.value !== frm.passwd.value){
+            alert('비밀번호가 일치하지 않습니다');
+            frm.repasswd.focus()
+            return false;
+        } else if(frm.name.value === ''){
+            alert('이름을 입력하세요');
+            frm.name.focus()
+            return false;
+        } else if(frm.email.value === ''){
+            alert('이메일 입력하세요');
+            frm.email.focus()
+            return false;
+        } else if (!validateEmail(frm.email.value)) {
+            alert('유효한 이메일 주소를 입력하세요');
+            frm.email.focus();
+            return false;
+        } else if (grecaptcha.getResponse() === '') {
+            alert('자동가입 방지를 클릭하세요!');
+            return false;
+        } else {
+            alert('회원가입 성공! 로그인을 해주세요.');
+            return true;
+        }
+    };
+
+    let validateEmail = (email) => {
+        // 이메일 형식 확인용 정규식
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailPattern.test(email);
+    }
+
+    joinbtn.addEventListener('click', () => {
+        if (!isChecked) {
+            alert('아이디 중복 체크를 먼저 수행해주세요.');
+            return;
+        }
+
+        if (!checkjoinfrm(joinfrm)) return;
+
+        const formData = new FormData(joinfrm);
+
+        console.log(formData);
+
+        let jsondata = {};
+        formData.forEach((val, key) => {
+            jsondata[key] = val;
+        });
+
+        jsondata['captcha'] = grecaptcha.getResponse();
+
+        console.log(jsondata);
+
+        // ajax를 이용해서 서버로 json 데이터 전송하고 결과 받음
+        fetch('/member/join', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsondata),
+
+            redirect: 'follow'
+        }).then((res) => {
+            if (res.redirected) location.href = res.url;
+        });
+    });
+
+</script>
+{% endblock %}
